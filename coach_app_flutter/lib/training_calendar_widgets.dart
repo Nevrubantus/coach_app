@@ -51,7 +51,7 @@ class CalendarCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Column(
         children: [
           const Row(
@@ -188,7 +188,7 @@ class EmptyScheduleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: const Center(
         child: Text(
           'На выбранную дату тренировок нет',

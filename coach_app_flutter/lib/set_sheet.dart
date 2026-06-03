@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'app_ui.dart';
 import 'core/app_colors.dart';
 import 'training_formatters.dart';
@@ -156,7 +157,7 @@ class _NumberStepper extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: appFieldColor(context),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -213,7 +214,7 @@ class _RoundStepperButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         style: primaryButtonStyle(
-          background: Colors.white,
+          background: appSurfaceColor(context),
           foreground: AppColors.primaryBlue,
           radius: 18,
         ).copyWith(padding: const WidgetStatePropertyAll(EdgeInsets.zero)),

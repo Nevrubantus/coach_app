@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'core/app_colors.dart';
 
 const appCardRadius = 18.0;
 
-final softCardDecoration = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(appCardRadius),
-  border: Border.all(color: const Color(0xFFEDEDF2)),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black.withValues(alpha: 0.04),
-      blurRadius: 16,
-      offset: const Offset(0, 6),
-    ),
-  ],
-);
+BoxDecoration softCardDecoration(BuildContext context) {
+  return BoxDecoration(
+    color: appSurfaceColor(context),
+    borderRadius: BorderRadius.circular(appCardRadius),
+    border: Border.all(color: appBorderColor(context)),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: isAppDark(context) ? 0.18 : 0.04),
+        blurRadius: 16,
+        offset: const Offset(0, 6),
+      ),
+    ],
+  );
+}
 
 Future<T?> showAppBottomSheet<T>(
   BuildContext context,
@@ -25,7 +28,7 @@ Future<T?> showAppBottomSheet<T>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    backgroundColor: Colors.white,
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
     ),
@@ -35,22 +38,32 @@ Future<T?> showAppBottomSheet<T>(
 
 InputDecoration appInputDecoration(
   String label, {
+  BuildContext? context,
   String? hint,
   IconData? icon,
 }) {
+  final dark = context != null && isAppDark(context);
   return InputDecoration(
     labelText: label,
     hintText: hint,
-    prefixIcon: icon == null ? null : Icon(icon, color: Colors.grey),
+    prefixIcon: icon == null
+        ? null
+        : Icon(icon, color: dark ? const Color(0xFFB0B3BD) : Colors.grey),
     filled: true,
-    fillColor: const Color(0xFFF8F9FA),
+    fillColor: context == null
+        ? const Color(0xFFF8F9FA)
+        : appFieldColor(context),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
-      borderSide: BorderSide.none,
+      borderSide: BorderSide(
+        color: context == null ? Colors.transparent : appBorderColor(context),
+      ),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
-      borderSide: BorderSide.none,
+      borderSide: BorderSide(
+        color: context == null ? Colors.transparent : appBorderColor(context),
+      ),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
@@ -93,8 +106,8 @@ class PickerButton extends StatelessWidget {
         icon: Icon(icon),
         label: FittedBox(child: Text(label)),
         style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.black87,
-          side: const BorderSide(color: Color(0xFFE1E1E8)),
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          side: BorderSide(color: appBorderColor(context)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
@@ -118,7 +131,7 @@ class ServerProblemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: softCardDecoration.copyWith(
+      decoration: softCardDecoration(context).copyWith(
         color: const Color(0xFFFFF8E8),
         border: Border.all(color: const Color(0xFFFFDFA3)),
       ),

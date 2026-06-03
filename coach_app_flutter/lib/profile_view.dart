@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app_theme.dart';
 import 'login_screen.dart';
 import 'main.dart';
 import 'offline_cache.dart';
@@ -175,7 +176,11 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _logout() async {
     final navigator = Navigator.of(context);
     final prefs = await SharedPreferences.getInstance();
+    final themeMode = prefs.getString(appThemeModeKey);
     await prefs.clear();
+    if (themeMode != null) {
+      await prefs.setString(appThemeModeKey, themeMode);
+    }
 
     if (!mounted) return;
     navigator.pushAndRemoveUntil(
@@ -199,6 +204,8 @@ class _ProfileViewState extends State<ProfileView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _avatarBlock(),
+          const SizedBox(height: 20),
+          _themeBlock(),
           const SizedBox(height: 24),
           const Text(
             'Аккаунт',
@@ -218,9 +225,9 @@ class _ProfileViewState extends State<ProfileView> {
             icon: Icons.alternate_email_rounded,
             keyboardType: TextInputType.text,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Divider(color: Colors.black12, thickness: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Divider(color: appBorderColor(context), thickness: 1),
           ),
           const Text(
             'Антропометрия',
@@ -244,7 +251,9 @@ class _ProfileViewState extends State<ProfileView> {
               onPressed: _showSaveButton ? _saveProfile : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3D76E4),
-                disabledBackgroundColor: const Color(0xFFE6E8EF),
+                disabledBackgroundColor: isAppDark(context)
+                    ? const Color(0xFF2A2D36)
+                    : const Color(0xFFE6E8EF),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -301,6 +310,48 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  Widget _themeBlock() {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeMode,
+      builder: (context, mode, _) {
+        final isDark = mode == ThemeMode.dark;
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: appSurfaceColor(context),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: appBorderColor(context)),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.wb_sunny_rounded,
+                color: isDark ? appMutedTextColor(context) : Colors.amber,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Тема',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              _ThemeSwitch(
+                isDark: isDark,
+                onChanged: setAppDarkTheme,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildInputField(
     String label,
     TextEditingController controller, {
@@ -317,13 +368,18 @@ class _ProfileViewState extends State<ProfileView> {
         style: const TextStyle(fontSize: 15),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: icon == null ? null : Icon(icon, color: Colors.grey),
-          labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+          prefixIcon: icon == null
+              ? null
+              : Icon(icon, color: appMutedTextColor(context)),
+          labelStyle: TextStyle(
+            color: appMutedTextColor(context),
+            fontSize: 14,
+          ),
           filled: true,
-          fillColor: const Color(0xFFF8F9FA),
+          fillColor: appFieldColor(context),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(color: appBorderColor(context)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
@@ -332,6 +388,102 @@ class _ProfileViewState extends State<ProfileView> {
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 15,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeSwitch extends StatelessWidget {
+  final bool isDark;
+  final ValueChanged<bool> onChanged;
+
+  const _ThemeSwitch({
+    required this.isDark,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: isDark ? 'Темная тема' : 'Светлая тема',
+      child: GestureDetector(
+        onTapDown: (details) => onChanged(details.localPosition.dx > 53),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: 106,
+          height: 42,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF2A2D36) : const Color(0xFFEFF2F8),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: appBorderColor(context)),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                left: 52,
+                top: 6,
+                bottom: 6,
+                child: Container(
+                  width: 1,
+                  color: appBorderColor(context),
+                ),
+              ),
+              Positioned(
+                left: 17,
+                child: Icon(
+                  Icons.wb_sunny_rounded,
+                  size: 16,
+                  color: isDark ? const Color(0xFF747884) : Colors.amber,
+                ),
+              ),
+              Positioned(
+                right: 17,
+                child: Icon(
+                  Icons.dark_mode_rounded,
+                  size: 16,
+                  color: isDark
+                      ? const Color(0xFF8CA8FF)
+                      : const Color(0xFF9AA0AA),
+                ),
+              ),
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                alignment: isDark
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                child: Container(
+                  width: 48,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF2C3448) : Colors.white,
+                    borderRadius: BorderRadius.circular(11),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF3D76E4)
+                          : const Color(0xFFE1E6F1),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.18),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    isDark ? Icons.dark_mode_rounded : Icons.wb_sunny_rounded,
+                    size: 16,
+                    color: isDark ? Colors.white : Colors.amber,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

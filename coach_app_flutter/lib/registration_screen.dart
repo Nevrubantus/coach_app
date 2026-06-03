@@ -1,6 +1,7 @@
 import 'package:coach_app_client/coach_app_client.dart' as server;
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'app_ui.dart';
 import 'core/app_colors.dart';
 import 'main.dart';
@@ -105,12 +106,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundWhite,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -132,7 +134,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               const SizedBox(height: 24),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.inputBackground,
+                  color: appFieldColor(context),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -188,7 +190,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
-                    disabledBackgroundColor: const Color(0xFFE6E8EF),
+                    disabledBackgroundColor: isAppDark(context)
+                        ? const Color(0xFF2A2D36)
+                        : const Color(0xFFE6E8EF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -217,7 +221,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Widget _personalDataConsentCard() {
     return Material(
-      color: const Color(0xFFF8F9FA),
+      color: appFieldColor(context),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () => setState(() {
@@ -373,14 +377,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return TextField(
       controller: controller,
       obscureText: isPassword,
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,
-        prefixIcon: Icon(icon, color: AppColors.textGrey),
+        prefixIcon: Icon(icon, color: appMutedTextColor(context)),
         filled: true,
-        fillColor: AppColors.inputBackground,
+        fillColor: appFieldColor(context),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: appBorderColor(context)),
         ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 18,

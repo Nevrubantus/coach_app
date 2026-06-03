@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_config.dart';
+import 'app_theme.dart';
 import 'athlete_home_screen.dart';
 import 'coach_dashboard_screen.dart';
 import 'login_screen.dart';
@@ -21,6 +22,8 @@ Future<void> main() async {
   debugPrint('Serverpod URL: $serverUrl');
   client = Client(serverUrl);
 
+  await loadAppThemeMode();
+
   final prefs = await SharedPreferences.getInstance();
   final loggedIn = prefs.getBool('is_logged_in') ?? false;
 
@@ -34,15 +37,67 @@ class CoachApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Coach App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3D76E4)),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeMode,
+      builder: (context, themeMode, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Coach App',
+        theme: _appTheme(Brightness.light),
+        darkTheme: _appTheme(Brightness.dark),
+        themeMode: themeMode,
+        home: isLoggedIn ? const RoleGate() : const LoginScreen(),
       ),
-      home: isLoggedIn ? const RoleGate() : const LoginScreen(),
+    );
+  }
+
+  ThemeData _appTheme(Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF3D76E4),
+      brightness: brightness,
+    );
+    final background = isDark ? const Color(0xFF0D0F14) : Colors.white;
+    final surface = isDark ? const Color(0xFF181A20) : Colors.white;
+    final field = isDark ? const Color(0xFF20232B) : const Color(0xFFF8F9FA);
+    final border = isDark ? const Color(0xFF343844) : const Color(0xFFE5E5EA);
+
+    return ThemeData(
+      colorScheme: colorScheme,
+      useMaterial3: true,
+      brightness: brightness,
+      scaffoldBackgroundColor: background,
+      appBarTheme: AppBarTheme(
+        backgroundColor: background,
+        foregroundColor: isDark ? Colors.white : const Color(0xFF1D1D26),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: surface,
+        selectedItemColor: const Color(0xFF3D76E4),
+        unselectedItemColor: isDark ? const Color(0xFF878A94) : Colors.grey,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: field,
+        labelStyle: TextStyle(
+          color: isDark ? const Color(0xFFB0B3BD) : Colors.grey,
+        ),
+        hintStyle: TextStyle(
+          color: isDark ? const Color(0xFF878A94) : Colors.grey,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFF3D76E4), width: 1.5),
+        ),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Color(0xFF3D76E4),
+      ),
     );
   }
 }
@@ -135,7 +190,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: pages[_selectedIndex],

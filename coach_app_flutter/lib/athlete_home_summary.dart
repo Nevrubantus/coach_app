@@ -1,6 +1,7 @@
 import 'package:coach_app_client/coach_app_client.dart';
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'core/app_colors.dart';
 import 'training_formatters.dart';
 
@@ -14,7 +15,7 @@ class MotivationBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: appFieldColor(context),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -163,7 +164,9 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFFE4FBFF),
+      color: isAppDark(context)
+          ? const Color(0xFF182C34)
+          : const Color(0xFFE4FBFF),
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -205,8 +208,10 @@ class _SummaryCard extends StatelessWidget {
                       label.toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.black54,
+                      style: TextStyle(
+                        color: isAppDark(context)
+                            ? const Color(0xFFB0B3BD)
+                            : Colors.black54,
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                       ),

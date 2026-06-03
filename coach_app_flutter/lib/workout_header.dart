@@ -108,7 +108,7 @@ class EmptyWorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: softCardDecoration.copyWith(
+      decoration: softCardDecoration(context).copyWith(
         borderRadius: BorderRadius.circular(22),
       ),
       child: const Center(

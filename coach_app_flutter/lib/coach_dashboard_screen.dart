@@ -298,14 +298,12 @@ class _CoachDashboardScreenState extends State<CoachDashboardScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           _titles[_selectedIndex],
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: pages[_selectedIndex],

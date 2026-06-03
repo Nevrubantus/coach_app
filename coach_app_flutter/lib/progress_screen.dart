@@ -146,7 +146,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                decoration: softCardDecoration,
+                decoration: softCardDecoration(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -217,7 +217,7 @@ class _BodyWeightSection extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -268,7 +268,7 @@ class _ProgressPointCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Row(
         children: [
           Container(
@@ -307,7 +307,7 @@ class _EmptyProgressCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: const Center(
         child: Text(
           'После первого сохраненного подхода появится график упражнений',

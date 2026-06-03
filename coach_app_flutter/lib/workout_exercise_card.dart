@@ -1,6 +1,7 @@
 import 'package:coach_app_client/coach_app_client.dart';
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'app_ui.dart';
 import 'core/app_colors.dart';
 import 'exercise_image.dart';
@@ -38,14 +39,14 @@ class WorkoutExerciseCard extends StatelessWidget {
     final exercise = libraryExercise;
 
     return Material(
-      color: Colors.white,
+      color: appSurfaceColor(context),
       borderRadius: BorderRadius.circular(22),
       child: InkWell(
         onTap: canAddSet ? onAddSet : null,
         borderRadius: BorderRadius.circular(22),
         child: Container(
           padding: const EdgeInsets.all(14),
-          decoration: softCardDecoration.copyWith(
+          decoration: softCardDecoration(context).copyWith(
             borderRadius: BorderRadius.circular(22),
           ),
           child: Column(
@@ -185,7 +186,7 @@ class _SetTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: appFieldColor(context),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -271,7 +272,7 @@ class _ExerciseStat extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: appFieldColor(context),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

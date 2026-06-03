@@ -295,7 +295,7 @@ class _CoachCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Row(
         children: [
           AvatarPreview(

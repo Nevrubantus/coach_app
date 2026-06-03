@@ -1,6 +1,7 @@
 import 'package:coach_app_client/coach_app_client.dart';
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'app_ui.dart';
 import 'core/app_colors.dart';
 import 'profile_avatar_editor.dart';
@@ -97,7 +98,7 @@ class _WorkoutVideoSheetState extends State<WorkoutVideoSheet> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(18),
-                  decoration: softCardDecoration,
+                  decoration: softCardDecoration(context),
                   child: const Text(
                     'К этому подходу пока не прикреплено видео.',
                     textAlign: TextAlign.center,
@@ -155,7 +156,7 @@ class _VideoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -311,7 +312,7 @@ class _TrainerCommentRow extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FA),
+                color: appFieldColor(context),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(

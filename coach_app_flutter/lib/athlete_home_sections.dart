@@ -25,7 +25,7 @@ class UpcomingWorkoutSection extends StatelessWidget {
     return _SectionContainer(
       title: 'Предстоящая тренировка',
       child: Container(
-        decoration: softCardDecoration,
+        decoration: softCardDecoration(context),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -112,7 +112,7 @@ class ProgressSection extends StatelessWidget {
       title: 'Анализ прогресса рабочего веса',
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-        decoration: softCardDecoration,
+        decoration: softCardDecoration(context),
         child: isLoading
             ? const SizedBox(
                 height: 120,
@@ -223,7 +223,7 @@ class _MetricCard extends StatelessWidget {
     return Container(
       height: 96,
       padding: const EdgeInsets.all(12),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,

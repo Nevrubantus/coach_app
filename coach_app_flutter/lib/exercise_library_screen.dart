@@ -1,6 +1,7 @@
 import 'package:coach_app_client/coach_app_client.dart';
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'app_ui.dart';
 import 'core/app_colors.dart';
 import 'exercise_image.dart';
@@ -80,9 +81,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
           'Библиотека упражнений',
@@ -99,13 +98,16 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: 'Поиск упражнения',
-                prefixIcon: const Icon(Icons.search, color: AppColors.textGrey),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: appMutedTextColor(context),
+                ),
                 filled: true,
-                fillColor: const Color(0xFFF8F9FA),
+                fillColor: appFieldColor(context),
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(color: appBorderColor(context)),
                 ),
               ),
             ),
@@ -157,7 +159,7 @@ class _ExerciseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: appSurfaceColor(context),
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: selectionMode ? onSelect : onTechniqueTap,
@@ -166,7 +168,7 @@ class _ExerciseTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFEDEDF2)),
+            border: Border.all(color: appBorderColor(context)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),
@@ -243,7 +245,7 @@ class _EmptyExerciseList extends StatelessWidget {
       margin: const EdgeInsets.only(top: 60),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: appFieldColor(context),
         borderRadius: BorderRadius.circular(14),
       ),
       child: const Center(
@@ -292,7 +294,10 @@ Future<void> showExerciseTechniqueDialog(
             const SizedBox(height: 10),
             Text(
               exercise.description,
-              style: const TextStyle(color: Colors.black87, height: 1.35),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                height: 1.35,
+              ),
             ),
             const SizedBox(height: 22),
             SizedBox(

@@ -41,7 +41,7 @@ class _CoachHomePage extends StatelessWidget {
           const SizedBox(height: 18),
           Container(
             padding: const EdgeInsets.all(14),
-            decoration: softCardDecoration,
+            decoration: softCardDecoration(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -142,7 +142,7 @@ class _CoachWorkoutsPage extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: softCardDecoration,
+            decoration: softCardDecoration(context),
             child: Column(
               children: [
                 const Icon(
@@ -243,7 +243,7 @@ class _SelectedAthleteHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Row(
         children: [
           AvatarPreview(
@@ -296,7 +296,7 @@ class _ProgressPreview extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -351,7 +351,7 @@ class _WorkoutSection extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            decoration: softCardDecoration,
+            decoration: softCardDecoration(context),
             child: Text(
               emptyText,
               textAlign: TextAlign.center,
@@ -373,7 +373,7 @@ class _WorkoutSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(18),
                   child: Container(
                     padding: const EdgeInsets.all(14),
-                    decoration: softCardDecoration,
+                    decoration: softCardDecoration(context),
                     child: Row(
                       children: [
                         Container(
@@ -451,7 +451,7 @@ class _AthleteTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         child: Container(
           padding: const EdgeInsets.all(14),
-          decoration: softCardDecoration,
+          decoration: softCardDecoration(context),
           child: Row(
             children: [
               AvatarPreview(
@@ -501,7 +501,7 @@ class _EmptyCoachCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: softCardDecoration,
+      decoration: softCardDecoration(context),
       child: const Text(
         'Добавьте первого спортсмена по телефону или email.',
         textAlign: TextAlign.center,

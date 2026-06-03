@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_config.dart';
+import 'app_theme.dart';
 import 'app_ui.dart';
 import 'core/app_colors.dart';
 import 'exercise_library_screen.dart';
@@ -533,9 +534,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
           'Тренировка',
@@ -579,7 +578,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   onPressed: _toggleComplete,
                   style: primaryButtonStyle(
                     background: _workout.isCompleted
-                        ? Colors.black87
+                        ? (isAppDark(context)
+                              ? const Color(0xFF2A2D36)
+                              : Colors.black87)
                         : AppColors.primaryBlue,
                     radius: 18,
                   ),

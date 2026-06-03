@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'core/app_colors.dart';
 import 'main.dart';
 import 'registration_screen.dart';
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -100,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 40),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.inputBackground,
+                  color: appFieldColor(context),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -224,14 +225,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextField(
       controller: controller,
       obscureText: isPassword,
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,
-        prefixIcon: Icon(icon, color: AppColors.textGrey),
+        prefixIcon: Icon(icon, color: appMutedTextColor(context)),
         filled: true,
-        fillColor: AppColors.inputBackground,
+        fillColor: appFieldColor(context),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: appBorderColor(context)),
         ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 18,
