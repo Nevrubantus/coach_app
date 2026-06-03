@@ -50,6 +50,7 @@ class EditableProfileAvatar extends StatefulWidget {
 
 class EditableProfileAvatarState extends State<EditableProfileAvatar> {
   String? _imagePath;
+  Uint8List? _previewBytes;
   double _scale = 1;
   double _offsetX = 0;
   double _offsetY = 0;
@@ -69,7 +70,7 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
     if (mounted) setState(() => _isEditing = false);
   }
 
-  bool get hasImage => _imagePath != null;
+  bool get hasImage => _previewBytes != null || _imagePath != null;
 
   AvatarFrame get frame => AvatarFrame(
     scale: _scale,
@@ -79,10 +80,23 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
 
   Future<void> _loadAvatar() async {
     final prefs = await SharedPreferences.getInstance();
+    final storedImagePath = prefs.getString(userImageKey);
+    final imagePath = _isPersistableImagePath(storedImagePath)
+        ? storedImagePath
+        : null;
+
+    if (storedImagePath != null && imagePath == null) {
+      await prefs.remove(userImageKey);
+      await prefs.remove(userImageScaleKey);
+      await prefs.remove(userImageOffsetXKey);
+      await prefs.remove(userImageOffsetYKey);
+    }
+
     if (!mounted) return;
 
     setState(() {
-      _imagePath = prefs.getString(userImageKey);
+      _imagePath = imagePath;
+      _previewBytes = null;
       _scale = (prefs.getDouble(userImageScaleKey) ?? 1)
           .clamp(0.5, 4.0)
           .toDouble();
@@ -95,7 +109,7 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
     final prefs = await SharedPreferences.getInstance();
     final imagePath = _imagePath;
 
-    if (imagePath == null) {
+    if (!_isPersistableImagePath(imagePath)) {
       await prefs.remove(userImageKey);
       await prefs.remove(userImageScaleKey);
       await prefs.remove(userImageOffsetXKey);
@@ -103,7 +117,7 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
       return;
     }
 
-    await prefs.setString(userImageKey, imagePath);
+    await prefs.setString(userImageKey, imagePath!);
     await prefs.setDouble(userImageScaleKey, _scale);
     await prefs.setDouble(userImageOffsetXKey, _offsetX);
     await prefs.setDouble(userImageOffsetYKey, _offsetY);
@@ -118,17 +132,15 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
     if (pickedFile == null) return;
 
     final bytes = await pickedFile.readAsBytes();
-    final previewPath = _imageDataUri(pickedFile, bytes);
-
     setState(() {
-      _imagePath = previewPath;
+      _imagePath = null;
+      _previewBytes = bytes;
       _scale = 1;
       _offsetX = 0;
       _offsetY = 0;
       _isEditing = true;
     });
     widget.onChanged?.call();
-    await _saveAvatar();
 
     final upload = widget.onImagePicked;
     if (upload == null) return;
@@ -139,26 +151,17 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
     );
     if (!mounted || remotePath == null || remotePath.trim().isEmpty) return;
 
-    setState(() => _imagePath = remotePath.trim());
+    setState(() {
+      _imagePath = remotePath.trim();
+      _previewBytes = null;
+    });
     await _saveAvatar();
-  }
-
-  String _imageDataUri(XFile file, Uint8List bytes) {
-    final mimeType = file.mimeType ?? _mimeTypeFromName(file.name);
-    return 'data:$mimeType;base64,${base64Encode(bytes)}';
-  }
-
-  String _mimeTypeFromName(String fileName) {
-    final lower = fileName.toLowerCase();
-    if (lower.endsWith('.png')) return 'image/png';
-    if (lower.endsWith('.webp')) return 'image/webp';
-    if (lower.endsWith('.gif')) return 'image/gif';
-    return 'image/jpeg';
   }
 
   Future<void> _removeAvatar() async {
     setState(() {
       _imagePath = null;
+      _previewBytes = null;
       _scale = 1;
       _offsetX = 0;
       _offsetY = 0;
@@ -206,7 +209,7 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
   }
 
   void _startEditing() {
-    if (_imagePath != null) setState(() => _isEditing = true);
+    if (hasImage) setState(() => _isEditing = true);
   }
 
   void _setDragging(bool value) {
@@ -216,7 +219,7 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
   }
 
   void _onPointerDown(PointerDownEvent event) {
-    if (_imagePath == null) return;
+    if (!hasImage) return;
 
     _pointers[event.pointer] = event.localPosition;
     if (_pointers.length == 2) {
@@ -280,47 +283,59 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    final hasImage = _imagePath != null;
+    final hasImage = this.hasImage;
+    final avatarSize = widget.radius * 2;
+    final frameSize = avatarSize + 18;
 
     return Column(
       children: [
-        Stack(
-          children: [
-            Listener(
-              onPointerDown: hasImage ? _onPointerDown : null,
-              onPointerMove: hasImage ? _onPointerMove : null,
-              onPointerUp: hasImage ? _onPointerEnd : null,
-              onPointerCancel: hasImage ? _onPointerEnd : null,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: hasImage ? _startEditing : _pickImage,
-                child: AvatarPreview(
-                  imagePath: _imagePath,
-                  radius: widget.radius,
-                  frameRadius: widget.radius,
-                  scale: _scale,
-                  offsetX: _offsetX,
-                  offsetY: _offsetY,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: hasImage ? _showImageActions : _pickImage,
-                child: CircleAvatar(
-                  backgroundColor: widget.cameraColor,
-                  radius: 18,
-                  child: const Icon(
-                    Icons.camera_alt,
-                    size: 16,
-                    color: Colors.white,
+        SizedBox(
+          width: frameSize,
+          height: frameSize,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                left: 0,
+                top: 0,
+                child: Listener(
+                  onPointerDown: hasImage ? _onPointerDown : null,
+                  onPointerMove: hasImage ? _onPointerMove : null,
+                  onPointerUp: hasImage ? _onPointerEnd : null,
+                  onPointerCancel: hasImage ? _onPointerEnd : null,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: hasImage ? _startEditing : _pickImage,
+                    child: AvatarPreview(
+                      imagePath: _imagePath,
+                      imageBytes: _previewBytes,
+                      radius: widget.radius,
+                      frameRadius: widget.radius,
+                      scale: _scale,
+                      offsetX: _offsetX,
+                      offsetY: _offsetY,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: hasImage ? _showImageActions : _pickImage,
+                  child: CircleAvatar(
+                    backgroundColor: widget.cameraColor,
+                    radius: 18,
+                    child: const Icon(
+                      Icons.camera_alt,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         if (hasImage && _isEditing) ...[
           const SizedBox(height: 14),
@@ -338,10 +353,19 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
       ],
     );
   }
+
+  bool _isPersistableImagePath(String? path) {
+    final normalizedPath = path?.trim();
+    if (normalizedPath == null || normalizedPath.isEmpty) return false;
+    if (normalizedPath.startsWith('data:')) return false;
+    if (normalizedPath.startsWith('blob:')) return false;
+    return true;
+  }
 }
 
 class AvatarPreview extends StatelessWidget {
   final String? imagePath;
+  final Uint8List? imageBytes;
   final double radius;
   final double scale;
   final double offsetX;
@@ -352,6 +376,7 @@ class AvatarPreview extends StatelessWidget {
   const AvatarPreview({
     super.key,
     required this.imagePath,
+    this.imageBytes,
     required this.radius,
     required this.scale,
     required this.offsetX,
@@ -366,32 +391,44 @@ class AvatarPreview extends StatelessWidget {
     final size = radius * 2;
     final offsetFactor = frameRadius <= 0 ? 1.0 : radius / frameRadius;
 
-    if (path == null || path.trim().isEmpty) return _fallback();
+    if (imageBytes == null && (path == null || path.trim().isEmpty)) {
+      return _fallback();
+    }
 
-    return ClipOval(
-      child: Container(
-        width: size,
-        height: size,
-        color: Colors.blue.shade50,
-        child: Transform.translate(
-          offset: Offset(offsetX * offsetFactor, offsetY * offsetFactor),
-          child: Transform.scale(
-            scale: scale,
-            child: _imageFor(path, size),
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipOval(
+        child: ColoredBox(
+          color: Colors.blue.shade50,
+          child: Transform.translate(
+            offset: Offset(offsetX * offsetFactor, offsetY * offsetFactor),
+            child: Transform.scale(
+              scale: scale,
+              child: _imageFor(path, size),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _imageFor(String path, double size) {
-    final memoryImage = _memoryImageFromDataUri(path);
+  Widget _imageFor(String? path, double size) {
+    final bytes = imageBytes;
+    if (bytes != null) {
+      return _memoryImage(bytes, size);
+    }
+
+    final normalizedPath = path?.trim();
+    if (normalizedPath == null || normalizedPath.isEmpty) return _fallback();
+
+    final memoryImage = _memoryImageFromDataUri(normalizedPath, size);
     if (memoryImage != null) {
       return memoryImage;
     }
 
-    if (_isFullUrl(path)) {
-      return _networkImage(path, size);
+    if (_isBrowserObjectUrl(normalizedPath) || _isFullUrl(normalizedPath)) {
+      return _networkImage(normalizedPath, size);
     }
 
     return FutureBuilder<String>(
@@ -400,7 +437,7 @@ class AvatarPreview extends StatelessWidget {
         final baseUrl = snapshot.data;
         if (baseUrl == null) return _fallback();
 
-        final imageUrl = Uri.parse(baseUrl).resolve(path).toString();
+        final imageUrl = Uri.parse(baseUrl).resolve(normalizedPath).toString();
         return _networkImage(imageUrl, size);
       },
     );
@@ -412,24 +449,30 @@ class AvatarPreview extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.contain,
+      gaplessPlayback: true,
       errorBuilder: (_, __, ___) => _fallback(),
     );
   }
 
-  Widget? _memoryImageFromDataUri(String path) {
+  Widget _memoryImage(Uint8List bytes, double size) {
+    return Image.memory(
+      bytes,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      errorBuilder: (_, __, ___) => _fallback(),
+    );
+  }
+
+  Widget? _memoryImageFromDataUri(String path, double size) {
     if (!path.startsWith('data:image/')) return null;
 
     final separator = path.indexOf(',');
     if (separator == -1) return null;
 
     try {
-      return Image.memory(
-        base64Decode(path.substring(separator + 1)),
-        width: radius * 2,
-        height: radius * 2,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => _fallback(),
-      );
+      return _memoryImage(base64Decode(path.substring(separator + 1)), size);
     } catch (_) {
       return null;
     }
@@ -455,6 +498,10 @@ class AvatarPreview extends StatelessWidget {
               ),
             ),
     );
+  }
+
+  bool _isBrowserObjectUrl(String path) {
+    return path.startsWith('blob:');
   }
 
   bool _isFullUrl(String path) {
