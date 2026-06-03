@@ -1,0 +1,9 @@
+.git/
+.dart_tool/
+**/.dart_tool/
+**/build/
+**/.idea/
+**/.vscode/
+tmp/
+**/*.log
+coach_app_server/web/static/uploads/
