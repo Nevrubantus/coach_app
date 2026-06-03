@@ -51,6 +51,10 @@ Future<List<String>> _serverUrlCandidates() async {
 }
 
 Future<String> resolveWebServerUrl() async {
+  if (kIsWeb) {
+    return _originUrl(Uri.base);
+  }
+
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     return _withPort(await resolveServerUrl(), 8082);
   }
@@ -66,6 +70,16 @@ Future<String> resolveWebServerUrl() async {
 
   final serverUrl = await resolveServerUrl();
   return _withTrailingSlash(serverUrl.replaceFirst(':8080', ':8082'));
+}
+
+String _originUrl(Uri uri) {
+  return _withTrailingSlash(
+    Uri(
+      scheme: uri.scheme,
+      host: uri.host,
+      port: uri.hasPort ? uri.port : null,
+    ).toString(),
+  );
 }
 
 String _withTrailingSlash(String url) {
