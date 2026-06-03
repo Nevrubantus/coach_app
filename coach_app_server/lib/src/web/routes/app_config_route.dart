@@ -30,7 +30,7 @@ class AppConfigRoute extends WidgetRoute {
     }
 
     return Uri(
-      scheme: 'https',
+      scheme: _isIpAddressHost(host) ? 'http' : 'https',
       host: _hostWithoutPort(host),
       port: _portFromHost(host),
       path: 'serverpod/',
@@ -56,6 +56,11 @@ bool _isLocalWebServer(String host) {
   return host.startsWith('localhost:8082') ||
       host.startsWith('127.0.0.1:8082') ||
       host.startsWith('[::1]:8082');
+}
+
+bool _isIpAddressHost(String host) {
+  final cleanHost = _hostWithoutPort(host);
+  return RegExp(r'^\d{1,3}(\.\d{1,3}){3}$').hasMatch(cleanHost);
 }
 
 String _hostWithoutPort(String host) {
