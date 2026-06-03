@@ -288,6 +288,8 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
     final frameSize = avatarSize + 18;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
           width: frameSize,
@@ -395,18 +397,14 @@ class AvatarPreview extends StatelessWidget {
       return _fallback();
     }
 
-    return SizedBox(
-      width: size,
-      height: size,
+    return SizedBox.square(
+      dimension: size,
       child: ClipOval(
-        child: ColoredBox(
-          color: Colors.blue.shade50,
-          child: Transform.translate(
-            offset: Offset(offsetX * offsetFactor, offsetY * offsetFactor),
-            child: Transform.scale(
-              scale: scale,
-              child: _imageFor(path, size),
-            ),
+        child: Transform.translate(
+          offset: Offset(offsetX * offsetFactor, offsetY * offsetFactor),
+          child: Transform.scale(
+            scale: scale,
+            child: _imageFor(path, size),
           ),
         ),
       ),
@@ -444,24 +442,26 @@ class AvatarPreview extends StatelessWidget {
   }
 
   Widget _networkImage(String url, double size) {
-    return Image.network(
-      url,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      gaplessPlayback: true,
-      errorBuilder: (_, __, ___) => _fallback(),
-    );
+    return _imageBox(NetworkImage(url), size);
   }
 
   Widget _memoryImage(Uint8List bytes, double size) {
-    return Image.memory(
-      bytes,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      gaplessPlayback: true,
-      errorBuilder: (_, __, ___) => _fallback(),
+    return _imageBox(MemoryImage(bytes), size);
+  }
+
+  Widget _imageBox(ImageProvider image, double size) {
+    return SizedBox.square(
+      dimension: size,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.blue.shade50,
+          image: DecorationImage(
+            image: image,
+            fit: BoxFit.contain,
+            alignment: Alignment.center,
+          ),
+        ),
+      ),
     );
   }
 
@@ -480,23 +480,30 @@ class AvatarPreview extends StatelessWidget {
 
   Widget _fallback() {
     final text = fallbackText?.trim();
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: Colors.blue.shade50,
-      child: text == null || text.isEmpty
-          ? Icon(
-              Icons.person,
-              size: radius,
-              color: const Color(0xFF3D76E4),
-            )
-          : Text(
-              text,
-              style: TextStyle(
-                color: const Color(0xFF3D76E4),
-                fontSize: radius * 0.52,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+    return SizedBox.square(
+      dimension: radius * 2,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.blue.shade50,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: text == null || text.isEmpty
+              ? Icon(
+                  Icons.person,
+                  size: radius,
+                  color: const Color(0xFF3D76E4),
+                )
+              : Text(
+                  text,
+                  style: TextStyle(
+                    color: const Color(0xFF3D76E4),
+                    fontSize: radius * 0.52,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+        ),
+      ),
     );
   }
 
