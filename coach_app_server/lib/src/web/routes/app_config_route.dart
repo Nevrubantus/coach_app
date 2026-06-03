@@ -25,15 +25,12 @@ class AppConfigRoute extends WidgetRoute {
     final host = _firstHeader(request, 'x-forwarded-host') ??
         _firstHeader(request, 'host') ??
         apiConfig.publicHost;
-    final scheme = _firstHeader(request, 'x-forwarded-proto') ??
-        apiConfig.publicScheme;
-
     if (_isLocalWebServer(host)) {
       return apiConfig.apiUrl.toString();
     }
 
     return Uri(
-      scheme: scheme,
+      scheme: 'https',
       host: _hostWithoutPort(host),
       port: _portFromHost(host),
       path: 'serverpod/',
