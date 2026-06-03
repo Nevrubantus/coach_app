@@ -67,10 +67,14 @@ server {
     server_name _;
 
     client_max_body_size 100m;
+    client_body_timeout 300s;
 
     location /serverpod/ {
         proxy_pass http://127.0.0.1:8080/;
         proxy_http_version 1.1;
+        proxy_connect_timeout 75s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
@@ -86,6 +90,10 @@ server {
     location / {
         proxy_pass http://127.0.0.1:8082;
         proxy_http_version 1.1;
+        proxy_hide_header Cache-Control;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate" always;
+        add_header Pragma "no-cache" always;
+        add_header Expires "0" always;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;

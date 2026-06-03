@@ -283,6 +283,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           pickedVideo.name,
           base64Encode(bytes),
         ),
+        timeout: serverUploadTimeout,
       );
 
       if (uploadedVideo == null) {
