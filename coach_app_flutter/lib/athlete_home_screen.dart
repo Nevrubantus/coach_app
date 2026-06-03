@@ -41,6 +41,7 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
   int _monthWorkoutCount = 0;
   String? _loadError;
   bool _isLoading = true;
+  bool _isOpeningCoachComment = false;
 
   @override
   void initState() {
@@ -207,6 +208,105 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
     await _loadDashboard();
   }
 
+  Future<void> _openLatestCoachComment() async {
+    final coach = _coach;
+    final coachId = coach?.id;
+    if (_isOpeningCoachComment || coachId == null) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    if (userId == null) return;
+
+    setState(() => _isOpeningCoachComment = true);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Ищем последний комментарий тренера...')),
+    );
+
+    try {
+      final target = await _findLatestCoachComment(userId, coachId);
+      if (!mounted) return;
+      messenger.hideCurrentSnackBar();
+
+      if (target == null) {
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Комментариев тренера к видео пока нет.'),
+          ),
+        );
+        return;
+      }
+
+      await navigator.push(
+        MaterialPageRoute(
+          builder: (_) => WorkoutDetailScreen(
+            workout: target.workout,
+            initialVideoSetId: target.video.workoutSetId,
+            initialVideoId: target.video.id,
+          ),
+        ),
+      );
+      await _loadDashboard();
+    } catch (_) {
+      if (!mounted) return;
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось открыть комментарий. Проверьте сервер.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isOpeningCoachComment = false);
+    }
+  }
+
+  Future<_CoachCommentTarget?> _findLatestCoachComment(
+    int userId,
+    int coachId,
+  ) async {
+    final workouts = await waitForServer(
+      client.training.listWorkouts(userId),
+      timeout: const Duration(seconds: 40),
+    );
+
+    _CoachCommentTarget? latest;
+    for (final workout in workouts) {
+      final workoutId = workout.id;
+      if (workoutId == null) continue;
+
+      final videos = await waitForServer(
+        client.training.listWorkoutVideos(workoutId),
+        timeout: const Duration(seconds: 25),
+      );
+
+      for (final video in videos) {
+        final videoId = video.id;
+        if (videoId == null) continue;
+
+        final comments = await waitForServer(
+          client.training.listVideoComments(videoId),
+          timeout: const Duration(seconds: 25),
+        );
+
+        for (final comment in comments) {
+          if (comment.coachId != coachId) continue;
+
+          if (latest == null ||
+              comment.createdAt.isAfter(latest.comment.createdAt)) {
+            latest = _CoachCommentTarget(
+              workout: workout,
+              video: video,
+              comment: comment,
+            );
+          }
+        }
+      }
+    }
+
+    return latest;
+  }
+
   List<ProgressPoint> get _selectedExercisePoints {
     if (_progressPoints.isEmpty) return const [];
 
@@ -243,7 +343,11 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
           MotivationBanner(monthWorkoutCount: _monthWorkoutCount),
           if (_coach != null) ...[
             const SizedBox(height: 12),
-            _CoachCard(coach: _coach!),
+            _CoachCard(
+              coach: _coach!,
+              isLoading: _isOpeningCoachComment,
+              onTap: _openLatestCoachComment,
+            ),
           ],
           if (_loadError != null) ...[
             const SizedBox(height: 12),
@@ -286,61 +390,105 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
   }
 }
 
+class _CoachCommentTarget {
+  final Workout workout;
+  final WorkoutVideo video;
+  final VideoComment comment;
+
+  const _CoachCommentTarget({
+    required this.workout,
+    required this.video,
+    required this.comment,
+  });
+}
+
 class _CoachCard extends StatelessWidget {
   final User coach;
+  final bool isLoading;
+  final VoidCallback onTap;
 
-  const _CoachCard({required this.coach});
+  const _CoachCard({
+    required this.coach,
+    required this.isLoading,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: softCardDecoration(context),
-      child: Row(
-        children: [
-          AvatarPreview(
-            imagePath: coach.imagePath,
-            radius: 22,
-            scale: coach.imageScale ?? 1,
-            offsetX: coach.imageOffsetX ?? 0,
-            offsetY: coach.imageOffsetY ?? 0,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: isLoading ? null : onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
               children: [
-                const Text(
-                  'Ваш тренер',
-                  style: TextStyle(
+                AvatarPreview(
+                  imagePath: coach.imagePath,
+                  radius: 22,
+                  scale: coach.imageScale ?? 1,
+                  offsetX: coach.imageOffsetX ?? 0,
+                  offsetY: coach.imageOffsetY ?? 0,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Ваш тренер',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        coach.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      if (coach.contact.trim().isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          coach.contact,
+                          style: const TextStyle(
+                            color: AppColors.textGrey,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                if (isLoading)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.4),
+                  )
+                else
+                  const Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: AppColors.primaryBlue,
+                  ),
+                const SizedBox(width: 4),
+                if (!isLoading)
+                  const Icon(
+                    Icons.chevron_right_rounded,
                     color: AppColors.textGrey,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  coach.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                if (coach.contact.trim().isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    coach.contact,
-                    style: const TextStyle(
-                      color: AppColors.textGrey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

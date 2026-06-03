@@ -11,6 +11,7 @@ class WorkoutVideoSheet extends StatefulWidget {
   final List<WorkoutVideo> videos;
   final Map<int, List<VideoComment>> commentsByVideoId;
   final Map<int, User> commentAuthorsByCoachId;
+  final int? focusedVideoId;
   final bool canComment;
   final ValueChanged<WorkoutVideo> onOpenVideo;
   final Future<List<VideoComment>> Function(WorkoutVideo video, String text)
@@ -21,6 +22,7 @@ class WorkoutVideoSheet extends StatefulWidget {
     required this.videos,
     required this.commentsByVideoId,
     required this.commentAuthorsByCoachId,
+    this.focusedVideoId,
     required this.canComment,
     required this.onOpenVideo,
     required this.onAddComment,
@@ -76,6 +78,16 @@ class _WorkoutVideoSheetState extends State<WorkoutVideoSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final videos = List<WorkoutVideo>.from(widget.videos);
+    final focusedVideoId = widget.focusedVideoId;
+    if (focusedVideoId != null) {
+      videos.sort((a, b) {
+        if (a.id == focusedVideoId) return -1;
+        if (b.id == focusedVideoId) return 1;
+        return a.uploadedAt.compareTo(b.uploadedAt);
+      });
+    }
+
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
@@ -94,7 +106,7 @@ class _WorkoutVideoSheetState extends State<WorkoutVideoSheet> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 16),
-              if (widget.videos.isEmpty)
+              if (videos.isEmpty)
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(18),
@@ -109,7 +121,7 @@ class _WorkoutVideoSheetState extends State<WorkoutVideoSheet> {
                   ),
                 )
               else
-                for (final video in widget.videos)
+                for (final video in videos)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 14),
                     child: _VideoCard(

@@ -23,10 +23,14 @@ import 'workout_video_sheet.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   final Workout workout;
+  final int? initialVideoSetId;
+  final int? initialVideoId;
 
   const WorkoutDetailScreen({
     super.key,
     required this.workout,
+    this.initialVideoSetId,
+    this.initialVideoId,
   });
 
   @override
@@ -45,6 +49,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   int? _currentUserId;
   bool _isAthlete = true;
   bool _isUploadingVideo = false;
+  bool _openedInitialVideo = false;
   String? _loadError;
   bool _isLoading = true;
 
@@ -181,6 +186,10 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       _loadError = loadError;
       _isLoading = false;
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openInitialVideoIfNeeded();
+    });
   }
 
   Future<void> _loadCommentAuthors(
@@ -307,7 +316,31 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     }
   }
 
-  Future<void> _openVideos(WorkoutSet set) async {
+  void _openInitialVideoIfNeeded() {
+    if (_openedInitialVideo) return;
+
+    final setId = widget.initialVideoSetId;
+    if (setId == null) return;
+
+    WorkoutSet? targetSet;
+    for (final sets in _setsByExerciseId.values) {
+      for (final set in sets) {
+        if (set.id == setId) {
+          targetSet = set;
+          break;
+        }
+      }
+      if (targetSet != null) break;
+    }
+
+    final videos = _videosBySetId[setId] ?? const <WorkoutVideo>[];
+    if (targetSet == null || videos.isEmpty) return;
+
+    _openedInitialVideo = true;
+    _openVideos(targetSet, focusedVideoId: widget.initialVideoId);
+  }
+
+  Future<void> _openVideos(WorkoutSet set, {int? focusedVideoId}) async {
     final videos = _videosBySetId[set.id] ?? const <WorkoutVideo>[];
 
     await showAppBottomSheet<void>(
@@ -316,6 +349,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         videos: videos,
         commentsByVideoId: _commentsByVideoId,
         commentAuthorsByCoachId: _commentAuthorsByCoachId,
+        focusedVideoId: focusedVideoId,
         canComment: !_isAthlete,
         onOpenVideo: _openVideo,
         onAddComment: _addVideoComment,
