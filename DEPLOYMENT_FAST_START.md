@@ -109,6 +109,12 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    location /uploads/ {
+        alias /opt/coach_app/uploads/;
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=3600";
+    }
+
     location / {
         proxy_pass http://127.0.0.1:8082;
         proxy_http_version 1.1;
