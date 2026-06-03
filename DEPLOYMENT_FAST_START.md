@@ -5,8 +5,9 @@
 ## Что уже подготовлено
 
 - Flutter Web собран в `coach_app_server/web/app`.
-- Web-сборка настроена на домен `https://progress-fit.ru`.
-- Serverpod API ожидается по адресу `https://progress-fit.ru/serverpod/`.
+- Web-сборка не привязана к одному домену.
+- Flutter получает адрес Serverpod из `/app/assets/assets/config.json`.
+- Сервер формирует API-адрес от текущего домена: `/serverpod/`.
 - Загруженные видео и аватары нужно хранить вне Docker-контейнера, чтобы они не пропали после пересборки.
 
 ## Локальная сборка Flutter Web
@@ -18,9 +19,7 @@ cd C:\Users\artem\coach_app\coach_app\coach_app_flutter
 
 flutter build web `
   --base-href /app/ `
-  --no-wasm-dry-run `
-  --dart-define=SERVER_URL=https://progress-fit.ru/serverpod/ `
-  --dart-define=WEB_SERVER_URL=https://progress-fit.ru/
+  --no-wasm-dry-run
 ```
 
 После сборки скопировать результат:
@@ -151,3 +150,41 @@ curl.exe -4 -v --max-time 10 http://progress-fit.ru/app
 ```
 
 Если на сервере локально всё работает, а с Windows снова timeout и в `/var/log/nginx/access.log` нет запроса, значит проблема остаётся на стороне сетевого доступа TimeWeb.
+
+## Быстрый временный публичный доступ без карты
+
+Если TimeWeb всё ещё не отвечает снаружи, можно быстро открыть приложение через Cloudflare Quick Tunnel. Это не требует Zero Trust и банковской карты.
+
+На сервере:
+
+```bash
+docker rm -f cloudflared-demo 2>/dev/null || true
+
+docker run -d \
+  --name cloudflared-demo \
+  --network host \
+  --restart unless-stopped \
+  cloudflare/cloudflared:latest tunnel \
+  --no-autoupdate \
+  --url http://127.0.0.1:80
+```
+
+Посмотреть временную ссылку:
+
+```bash
+docker logs -f cloudflared-demo
+```
+
+В логах нужно найти адрес вида:
+
+```text
+https://что-то.trycloudflare.com
+```
+
+Открывать приложение:
+
+```text
+https://что-то.trycloudflare.com/app/
+```
+
+Это временная ссылка для демонстрации. После перезапуска tunnel она может измениться.
