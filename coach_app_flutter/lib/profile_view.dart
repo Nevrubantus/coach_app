@@ -316,36 +316,11 @@ class _ProfileViewState extends State<ProfileView> {
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
 
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: appSurfaceColor(context),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: appBorderColor(context)),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.wb_sunny_rounded,
-                color: isDark ? appMutedTextColor(context) : Colors.amber,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Тема',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ),
-              _ThemeSwitch(
-                isDark: isDark,
-                onChanged: setAppDarkTheme,
-              ),
-            ],
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: _ThemeSwitch(
+            isDark: isDark,
+            onChanged: setAppDarkTheme,
           ),
         );
       },
@@ -406,51 +381,22 @@ class _ThemeSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = isDark ? 'Темная тема' : 'Светлая тема';
+
     return Semantics(
       button: true,
-      label: isDark ? 'Темная тема' : 'Светлая тема',
-      child: GestureDetector(
-        onTapDown: (details) => onChanged(details.localPosition.dx > 53),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          width: 106,
-          height: 42,
-          padding: const EdgeInsets.all(4),
+      label: label,
+      child: SizedBox(
+        width: 106,
+        height: 42,
+        child: DecoratedBox(
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF2A2D36) : const Color(0xFFEFF2F8),
+            color: isDark ? const Color(0xFF20232B) : const Color(0xFFEFF2F8),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: appBorderColor(context)),
           ),
           child: Stack(
-            alignment: Alignment.center,
             children: [
-              Positioned(
-                left: 52,
-                top: 6,
-                bottom: 6,
-                child: Container(
-                  width: 1,
-                  color: appBorderColor(context),
-                ),
-              ),
-              Positioned(
-                left: 17,
-                child: Icon(
-                  Icons.wb_sunny_rounded,
-                  size: 16,
-                  color: isDark ? const Color(0xFF747884) : Colors.amber,
-                ),
-              ),
-              Positioned(
-                right: 17,
-                child: Icon(
-                  Icons.dark_mode_rounded,
-                  size: 16,
-                  color: isDark
-                      ? const Color(0xFF8CA8FF)
-                      : const Color(0xFF9AA0AA),
-                ),
-              ),
               AnimatedAlign(
                 duration: const Duration(milliseconds: 180),
                 curve: Curves.easeOut,
@@ -458,33 +404,82 @@ class _ThemeSwitch extends StatelessWidget {
                     ? Alignment.centerRight
                     : Alignment.centerLeft,
                 child: Container(
-                  width: 48,
-                  height: 34,
+                  width: 53,
+                  height: 42,
+                  margin: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF2C3448) : Colors.white,
-                    borderRadius: BorderRadius.circular(11),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark
                           ? const Color(0xFF3D76E4)
-                          : const Color(0xFFE1E6F1),
+                          : const Color(0xFFDDE4F1),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.18),
+                        color: Colors.black.withValues(alpha: 0.14),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
                     ],
                   ),
-                  child: Icon(
-                    isDark ? Icons.dark_mode_rounded : Icons.wb_sunny_rounded,
-                    size: 16,
-                    color: isDark ? Colors.white : Colors.amber,
-                  ),
                 ),
+              ),
+              Center(
+                child: Container(
+                  width: 1,
+                  height: 22,
+                  color: appBorderColor(context),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ThemeOption(
+                      icon: Icons.wb_sunny_rounded,
+                      color: isDark ? const Color(0xFF8B909C) : Colors.amber,
+                      onTap: () => onChanged(false),
+                    ),
+                  ),
+                  Expanded(
+                    child: _ThemeOption(
+                      icon: Icons.dark_mode_rounded,
+                      color: isDark
+                          ? const Color(0xFFDCE5FF)
+                          : const Color(0xFF8B909C),
+                      onTap: () => onChanged(true),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeOption extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ThemeOption({
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Center(
+          child: Icon(icon, size: 18, color: color),
         ),
       ),
     );
