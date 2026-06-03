@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -112,11 +112,16 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
+      maxWidth: 1400,
+      imageQuality: 88,
     );
     if (pickedFile == null) return;
 
+    final bytes = await pickedFile.readAsBytes();
+    final previewPath = _imageDataUri(pickedFile, bytes);
+
     setState(() {
-      _imagePath = pickedFile.path;
+      _imagePath = previewPath;
       _scale = 1;
       _offsetX = 0;
       _offsetY = 0;
@@ -130,12 +135,25 @@ class EditableProfileAvatarState extends State<EditableProfileAvatar> {
 
     final remotePath = await upload(
       pickedFile.name,
-      base64Encode(await pickedFile.readAsBytes()),
+      base64Encode(bytes),
     );
     if (!mounted || remotePath == null || remotePath.trim().isEmpty) return;
 
     setState(() => _imagePath = remotePath.trim());
     await _saveAvatar();
+  }
+
+  String _imageDataUri(XFile file, Uint8List bytes) {
+    final mimeType = file.mimeType ?? _mimeTypeFromName(file.name);
+    return 'data:$mimeType;base64,${base64Encode(bytes)}';
+  }
+
+  String _mimeTypeFromName(String fileName) {
+    final lower = fileName.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.gif')) return 'image/gif';
+    return 'image/jpeg';
   }
 
   Future<void> _removeAvatar() async {
@@ -367,15 +385,9 @@ class AvatarPreview extends StatelessWidget {
   }
 
   Widget _imageFor(String path, double size) {
-    final file = File(path);
-    if (file.existsSync()) {
-      return Image.file(
-        file,
-        width: size,
-        height: size,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => _fallback(),
-      );
+    final memoryImage = _memoryImageFromDataUri(path);
+    if (memoryImage != null) {
+      return memoryImage;
     }
 
     if (_isFullUrl(path)) {
@@ -402,6 +414,25 @@ class AvatarPreview extends StatelessWidget {
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) => _fallback(),
     );
+  }
+
+  Widget? _memoryImageFromDataUri(String path) {
+    if (!path.startsWith('data:image/')) return null;
+
+    final separator = path.indexOf(',');
+    if (separator == -1) return null;
+
+    try {
+      return Image.memory(
+        base64Decode(path.substring(separator + 1)),
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => _fallback(),
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   Widget _fallback() {
