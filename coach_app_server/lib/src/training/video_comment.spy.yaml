@@ -1,0 +1,13 @@
+class: VideoComment
+table: video_comment
+fields:
+  videoId: int
+  coachId: int
+  coachName: String
+  text: String
+  createdAt: DateTime
+indexes:
+  video_comment_video_idx:
+    fields: videoId
+  video_comment_coach_idx:
+    fields: coachId

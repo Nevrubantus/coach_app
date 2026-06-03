@@ -1,0 +1,6 @@
+class: ProgressPoint
+fields:
+  date: DateTime
+  exerciseName: String
+  weight: double
+

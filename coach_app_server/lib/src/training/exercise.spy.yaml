@@ -1,0 +1,11 @@
+class: Exercise
+table: exercise
+fields:
+  name: String
+  description: String
+  mediaUrl: String?
+  mediaType: String?
+indexes:
+  exercise_name_idx:
+    fields: name
+

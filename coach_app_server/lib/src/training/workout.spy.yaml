@@ -1,0 +1,15 @@
+class: Workout
+table: workout
+fields:
+  userId: int
+  title: String
+  scheduledAt: DateTime
+  durationMinutes: int?
+  notes: String?
+  isCompleted: bool
+indexes:
+  workout_user_idx:
+    fields: userId
+  workout_scheduled_at_idx:
+    fields: scheduledAt
+

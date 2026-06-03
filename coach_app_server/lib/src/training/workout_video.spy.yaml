@@ -1,0 +1,17 @@
+class: WorkoutVideo
+table: workout_video
+fields:
+  workoutId: int
+  workoutExerciseId: int
+  workoutSetId: int
+  athleteId: int
+  fileName: String
+  filePath: String
+  uploadedAt: DateTime
+indexes:
+  workout_video_workout_idx:
+    fields: workoutId
+  workout_video_set_idx:
+    fields: workoutSetId
+  workout_video_athlete_idx:
+    fields: athleteId

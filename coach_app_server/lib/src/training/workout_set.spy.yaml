@@ -1,0 +1,13 @@
+class: WorkoutSet
+table: workout_set
+fields:
+  workoutExerciseId: int
+  setIndex: int
+  weight: double
+  reps: int
+  notes: String?
+  createdAt: DateTime
+indexes:
+  workout_set_exercise_idx:
+    fields: workoutExerciseId
+

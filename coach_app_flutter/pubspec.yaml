@@ -1,0 +1,33 @@
+name: coach_app_flutter
+description: A new Flutter project for remote sports coaching.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '^3.8.0'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Твои локальные плагины
+  shared_preferences: ^2.2.2
+  image_picker: ^1.0.7
+
+  # Связка с бэкендом Serverpod (Строго по 2 пробела в начале строк!)
+  coach_app_client:
+    path: ../coach_app_client
+  serverpod_flutter: 3.4.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/config.json
+    - assets/exercises/

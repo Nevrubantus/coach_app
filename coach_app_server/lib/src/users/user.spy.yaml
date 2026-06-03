@@ -1,0 +1,18 @@
+class: User
+table: app_user
+fields:
+  name: String
+  contact: String
+  password: String
+  isAthlete: bool
+  height: String?
+  weight: String?
+  age: String?
+  imagePath: String?
+  imageScale: double?
+  imageOffsetX: double?
+  imageOffsetY: double?
+indexes:
+  app_user_contact_unique_idx:
+    fields: contact
+    unique: true

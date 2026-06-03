@@ -1,0 +1,14 @@
+class: WorkoutExercise
+table: workout_exercise
+fields:
+  workoutId: int
+  exerciseId: int
+  exerciseName: String
+  orderIndex: int
+  notes: String?
+indexes:
+  workout_exercise_workout_idx:
+    fields: workoutId
+  workout_exercise_exercise_idx:
+    fields: exerciseId
+

@@ -1,0 +1,36 @@
+coach:
+  - attachAthleteByContact:
+  - listAthletes:
+  - getCoachForAthlete:
+  - listAthleteWorkouts:
+  - createWorkoutForAthlete:
+  - updateAthleteWorkout:
+  - deleteAthleteWorkout:
+training:
+  - listExercises:
+  - listWorkouts:
+  - getWorkoutsForMonth:
+  - getUpcomingWorkout:
+  - createWorkout:
+  - updateWorkout:
+  - deleteWorkout:
+  - addExerciseToWorkout:
+  - listWorkoutExercises:
+  - addSet:
+  - listSets:
+  - uploadSetVideo:
+  - listSetVideos:
+  - listWorkoutVideos:
+  - addVideoComment:
+  - listVideoComments:
+  - getProgress:
+user:
+  - getUser:
+  - register:
+  - login:
+  - updateProfile:
+  - updateAccount:
+  - uploadProfileImage:
+  - removeProfileImage:
+  - updateProfileImageFrame:
+  - listBodyWeights:

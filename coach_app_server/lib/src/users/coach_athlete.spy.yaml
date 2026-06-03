@@ -1,0 +1,11 @@
+class: CoachAthlete
+table: coach_athlete
+fields:
+  coachId: int
+  athleteId: int
+  createdAt: DateTime
+indexes:
+  coach_athlete_coach_idx:
+    fields: coachId
+  coach_athlete_athlete_idx:
+    fields: athleteId
