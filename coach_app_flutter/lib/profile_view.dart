@@ -316,7 +316,8 @@ class _ProfileViewState extends State<ProfileView> {
       builder: (context, mode, _) {
         final isDark = mode == ThemeMode.dark;
 
-        return Center(
+        return Align(
+          alignment: Alignment.centerLeft,
           child: _ThemeSwitch(
             isDark: isDark,
             onChanged: setAppDarkTheme,
@@ -386,8 +387,8 @@ class _ThemeSwitch extends StatelessWidget {
       button: true,
       label: label,
       child: SizedBox(
-        width: 120,
-        height: 44,
+        width: 106,
+        height: 42,
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF20232B) : const Color(0xFFEFF2F8),
@@ -403,8 +404,8 @@ class _ThemeSwitch extends StatelessWidget {
                     ? Alignment.centerRight
                     : Alignment.centerLeft,
                 child: Container(
-                  width: 56,
-                  height: 38,
+                  width: 53,
+                  height: 42,
                   margin: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: isDark ? const Color(0xFF2C3448) : Colors.white,

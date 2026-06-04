@@ -108,19 +108,15 @@ class _NewWorkoutSheetState extends State<NewWorkoutSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Новая тренировка',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _titleController,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: appInputDecoration('Название', context: context),
+                decoration: appInputDecoration('Название'),
               ),
               const SizedBox(height: 12),
               Row(

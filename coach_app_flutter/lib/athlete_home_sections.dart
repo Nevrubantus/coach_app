@@ -22,8 +22,6 @@ class UpcomingWorkoutSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final detailColor = Theme.of(context).colorScheme.onSurfaceVariant;
-
     return _SectionContainer(
       title: 'Предстоящая тренировка',
       child: Container(
@@ -70,8 +68,8 @@ class UpcomingWorkoutSection extends StatelessWidget {
                                     : formatWorkoutDateTime(
                                         workout!.scheduledAt,
                                       ),
-                                style: TextStyle(
-                                  color: detailColor,
+                                style: const TextStyle(
+                                  color: AppColors.textGrey,
                                   fontSize: 13,
                                 ),
                               ),

@@ -475,8 +475,11 @@ class _CoachCard extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2.4),
                   )
                 else
-                  const _CoachCommentIcon(),
-                const SizedBox(width: 6),
+                  const Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: AppColors.primaryBlue,
+                  ),
+                const SizedBox(width: 4),
                 if (!isLoading)
                   const Icon(
                     Icons.chevron_right_rounded,
@@ -486,27 +489,6 @@ class _CoachCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CoachCommentIcon extends StatelessWidget {
-  const _CoachCommentIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Icon(
-        Icons.chat_bubble_rounded,
-        color: AppColors.primaryBlue,
-        size: 20,
       ),
     );
   }

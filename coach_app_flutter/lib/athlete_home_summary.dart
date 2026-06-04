@@ -15,14 +15,14 @@ class MotivationBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final motivation = _randomMotivation();
-    final countText = monthWorkoutCount == 0
-        ? null
+    final message = monthWorkoutCount == 0
+        ? motivation
         : 'В этом месяце уже ${formatCount(
             monthWorkoutCount,
             'тренировка',
             'тренировки',
             'тренировок',
-          )}.';
+          )}. $motivation';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -43,30 +43,9 @@ class MotivationBanner extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (countText != null) ...[
-                  Text(
-                    countText,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                ],
-                Text(
-                  motivation,
-                  style: TextStyle(
-                    color: countText == null
-                        ? Theme.of(context).colorScheme.onSurface
-                        : appMutedTextColor(context),
-                    fontSize: countText == null ? 15 : 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+            child: Text(
+              message,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -130,7 +109,7 @@ class SummaryGrid extends StatelessWidget {
                 icon: Icons.schedule_rounded,
                 iconColor: AppColors.primaryBlue,
                 value: upcomingWorkout == null
-                    ? '-'
+                    ? '—'
                     : formatTime(upcomingWorkout!.scheduledAt),
                 label: upcomingWorkout == null
                     ? 'календарь'
@@ -145,7 +124,7 @@ class SummaryGrid extends StatelessWidget {
                 icon: Icons.trending_up_rounded,
                 iconColor: Colors.green,
                 value: lastPoint == null
-                    ? '-'
+                    ? '—'
                     : delta == null
                     ? '${formatWeight(lastPoint.weight)} кг'
                     : '${delta >= 0 ? '+' : ''}${formatWeight(delta)} кг',
@@ -174,7 +153,7 @@ class SummaryGrid extends StatelessWidget {
               child: _SummaryCard(
                 icon: Icons.monitor_weight_outlined,
                 iconColor: AppColors.primaryBlue,
-                value: weight.trim().isEmpty ? '-' : '$weight кг',
+                value: weight.trim().isEmpty ? '—' : '$weight кг',
                 label: 'текущий вес',
                 title: 'Антропометрия',
                 onTap: onAnthropometryTap,
@@ -206,10 +185,6 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labelColor = isAppDark(context)
-        ? const Color(0xFFD4D8E2)
-        : const Color(0xFF4E5B67);
-
     return Material(
       color: isAppDark(context)
           ? const Color(0xFF182C34)
@@ -256,7 +231,9 @@ class _SummaryCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: labelColor,
+                        color: isAppDark(context)
+                            ? const Color(0xFFB0B3BD)
+                            : Colors.black54,
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                       ),
