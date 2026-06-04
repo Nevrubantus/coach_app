@@ -357,6 +357,49 @@ class TrainingEndpoint extends Endpoint {
     return points;
   }
 
+  Future<WeeklyLoadSummary> getWeeklyLoadSummary(
+    Session session,
+    int userId,
+  ) async {
+    final now = DateTime.now().toUtc();
+    final currentEnd = now;
+    final currentStart = currentEnd.subtract(const Duration(days: 7));
+    final previousStart = currentStart.subtract(const Duration(days: 7));
+
+    final current = await _collectLoad(
+      session,
+      userId,
+      currentStart,
+      currentEnd,
+    );
+    final previous = await _collectLoad(
+      session,
+      userId,
+      previousStart,
+      currentStart,
+    );
+
+    final best = _bestExerciseProgress(current, previous);
+    final percentChange = previous.volume <= 0
+        ? (current.volume > 0 ? 100.0 : 0.0)
+        : ((current.volume - previous.volume) / previous.volume) * 100;
+
+    return WeeklyLoadSummary(
+      currentVolume: current.volume,
+      previousVolume: previous.volume,
+      percentChange: percentChange,
+      currentWorkingSets: current.workingSets,
+      previousWorkingSets: previous.workingSets,
+      recommendedMinSets: 10,
+      recommendedMaxSets: 20,
+      bestExerciseName: best.name,
+      bestExerciseDelta: best.delta,
+      bestExerciseCurrentWeight: best.currentWeight,
+      currentWeekStart: currentStart,
+      currentWeekEnd: currentEnd,
+    );
+  }
+
   String _buildStoredVideoName(String fileName) {
     final extension = _safeExtension(fileName);
     final stamp = DateTime.now().microsecondsSinceEpoch;
@@ -371,6 +414,92 @@ class TrainingEndpoint extends Endpoint {
     final extension = trimmed.substring(dotIndex);
     final isSafe = RegExp(r'^\.[a-z0-9]{1,8}$').hasMatch(extension);
     return isSafe ? extension : '.mp4';
+  }
+
+  Future<_LoadStats> _collectLoad(
+    Session session,
+    int userId,
+    DateTime start,
+    DateTime end,
+  ) async {
+    final workouts = (await listWorkouts(session, userId))
+        .where(
+          (workout) =>
+              workout.isCompleted &&
+              !workout.scheduledAt.isBefore(start) &&
+              workout.scheduledAt.isBefore(end),
+        )
+        .toList();
+
+    var volume = 0.0;
+    var workingSets = 0;
+    final topWeights = <String, double>{};
+
+    for (final workout in workouts) {
+      final workoutId = workout.id;
+      if (workoutId == null) continue;
+
+      final workoutExercises = await listWorkoutExercises(session, workoutId);
+      for (final workoutExercise in workoutExercises) {
+        final workoutExerciseId = workoutExercise.id;
+        if (workoutExerciseId == null) continue;
+
+        final sets = await listSets(session, workoutExerciseId);
+        for (final set in sets) {
+          if (set.weight <= 0 || set.reps <= 0) continue;
+
+          workingSets += 1;
+          volume += set.weight * set.reps;
+
+          final exerciseName = workoutExercise.exerciseName;
+          final previousTop = topWeights[exerciseName];
+          if (previousTop == null || set.weight > previousTop) {
+            topWeights[exerciseName] = set.weight;
+          }
+        }
+      }
+    }
+
+    return _LoadStats(
+      volume: volume,
+      workingSets: workingSets,
+      topWeights: topWeights,
+    );
+  }
+
+  _ExerciseProgress _bestExerciseProgress(
+    _LoadStats current,
+    _LoadStats previous,
+  ) {
+    String? bestName;
+    var bestDelta = 0.0;
+    var bestCurrentWeight = 0.0;
+
+    for (final entry in current.topWeights.entries) {
+      final previousWeight = previous.topWeights[entry.key];
+      if (previousWeight == null) continue;
+
+      final delta = entry.value - previousWeight;
+      if (bestName == null || delta > bestDelta) {
+        bestName = entry.key;
+        bestDelta = delta;
+        bestCurrentWeight = entry.value;
+      }
+    }
+
+    if (bestName == null && current.topWeights.isNotEmpty) {
+      final entry = current.topWeights.entries.reduce(
+        (a, b) => a.value >= b.value ? a : b,
+      );
+      bestName = entry.key;
+      bestCurrentWeight = entry.value;
+    }
+
+    return _ExerciseProgress(
+      name: bestName,
+      delta: bestDelta,
+      currentWeight: bestCurrentWeight,
+    );
   }
 
   Future<void> _ensureExerciseLibrary(Session session) async {
@@ -390,6 +519,30 @@ class TrainingEndpoint extends Endpoint {
       }
     }
   }
+}
+
+class _LoadStats {
+  final double volume;
+  final int workingSets;
+  final Map<String, double> topWeights;
+
+  const _LoadStats({
+    required this.volume,
+    required this.workingSets,
+    required this.topWeights,
+  });
+}
+
+class _ExerciseProgress {
+  final String? name;
+  final double delta;
+  final double currentWeight;
+
+  const _ExerciseProgress({
+    required this.name,
+    required this.delta,
+    required this.currentWeight,
+  });
 }
 
 final _exerciseLibrary = [

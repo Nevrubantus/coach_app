@@ -77,7 +77,21 @@ class OfflineCache {
     int userId,
     List<ProgressPoint> points,
   ) {
-    return _writeList(_progressKey(userId), points.map((item) => item.toJson()));
+    return _writeList(
+      _progressKey(userId),
+      points.map((item) => item.toJson()),
+    );
+  }
+
+  static Future<WeeklyLoadSummary?> readWeeklyLoad(int userId) {
+    return _readObject(_weeklyLoadKey(userId), WeeklyLoadSummary.fromJson);
+  }
+
+  static Future<void> saveWeeklyLoad(
+    int userId,
+    WeeklyLoadSummary? summary,
+  ) {
+    return _writeObject(_weeklyLoadKey(userId), summary?.toJson());
   }
 
   static Future<List<BodyWeightEntry>> readBodyWeights(int userId) {
@@ -169,6 +183,10 @@ class OfflineCache {
 
   static String _progressKey(int userId) {
     return 'offline_progress_$userId';
+  }
+
+  static String _weeklyLoadKey(int userId) {
+    return 'offline_weekly_load_$userId';
   }
 
   static String _bodyWeightsKey(int userId) {

@@ -15,31 +15,33 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'training/exercise.dart' as _i3;
 import 'training/progress_point.dart' as _i4;
 import 'training/video_comment.dart' as _i5;
-import 'training/workout.dart' as _i6;
-import 'training/workout_exercise.dart' as _i7;
-import 'training/workout_set.dart' as _i8;
-import 'training/workout_video.dart' as _i9;
-import 'users/body_weight_entry.dart' as _i10;
-import 'users/coach_athlete.dart' as _i11;
-import 'users/user.dart' as _i12;
-import 'package:coach_app_server/src/generated/users/user.dart' as _i13;
-import 'package:coach_app_server/src/generated/training/workout.dart' as _i14;
-import 'package:coach_app_server/src/generated/training/exercise.dart' as _i15;
+import 'training/weekly_load_summary.dart' as _i6;
+import 'training/workout.dart' as _i7;
+import 'training/workout_exercise.dart' as _i8;
+import 'training/workout_set.dart' as _i9;
+import 'training/workout_video.dart' as _i10;
+import 'users/body_weight_entry.dart' as _i11;
+import 'users/coach_athlete.dart' as _i12;
+import 'users/user.dart' as _i13;
+import 'package:coach_app_server/src/generated/users/user.dart' as _i14;
+import 'package:coach_app_server/src/generated/training/workout.dart' as _i15;
+import 'package:coach_app_server/src/generated/training/exercise.dart' as _i16;
 import 'package:coach_app_server/src/generated/training/workout_exercise.dart'
-    as _i16;
-import 'package:coach_app_server/src/generated/training/workout_set.dart'
     as _i17;
-import 'package:coach_app_server/src/generated/training/workout_video.dart'
+import 'package:coach_app_server/src/generated/training/workout_set.dart'
     as _i18;
-import 'package:coach_app_server/src/generated/training/video_comment.dart'
+import 'package:coach_app_server/src/generated/training/workout_video.dart'
     as _i19;
-import 'package:coach_app_server/src/generated/training/progress_point.dart'
+import 'package:coach_app_server/src/generated/training/video_comment.dart'
     as _i20;
-import 'package:coach_app_server/src/generated/users/body_weight_entry.dart'
+import 'package:coach_app_server/src/generated/training/progress_point.dart'
     as _i21;
+import 'package:coach_app_server/src/generated/users/body_weight_entry.dart'
+    as _i22;
 export 'training/exercise.dart';
 export 'training/progress_point.dart';
 export 'training/video_comment.dart';
+export 'training/weekly_load_summary.dart';
 export 'training/workout.dart';
 export 'training/workout_exercise.dart';
 export 'training/workout_set.dart';
@@ -891,26 +893,29 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i5.VideoComment) {
       return _i5.VideoComment.fromJson(data) as T;
     }
-    if (t == _i6.Workout) {
-      return _i6.Workout.fromJson(data) as T;
+    if (t == _i6.WeeklyLoadSummary) {
+      return _i6.WeeklyLoadSummary.fromJson(data) as T;
     }
-    if (t == _i7.WorkoutExercise) {
-      return _i7.WorkoutExercise.fromJson(data) as T;
+    if (t == _i7.Workout) {
+      return _i7.Workout.fromJson(data) as T;
     }
-    if (t == _i8.WorkoutSet) {
-      return _i8.WorkoutSet.fromJson(data) as T;
+    if (t == _i8.WorkoutExercise) {
+      return _i8.WorkoutExercise.fromJson(data) as T;
     }
-    if (t == _i9.WorkoutVideo) {
-      return _i9.WorkoutVideo.fromJson(data) as T;
+    if (t == _i9.WorkoutSet) {
+      return _i9.WorkoutSet.fromJson(data) as T;
     }
-    if (t == _i10.BodyWeightEntry) {
-      return _i10.BodyWeightEntry.fromJson(data) as T;
+    if (t == _i10.WorkoutVideo) {
+      return _i10.WorkoutVideo.fromJson(data) as T;
     }
-    if (t == _i11.CoachAthlete) {
-      return _i11.CoachAthlete.fromJson(data) as T;
+    if (t == _i11.BodyWeightEntry) {
+      return _i11.BodyWeightEntry.fromJson(data) as T;
     }
-    if (t == _i12.User) {
-      return _i12.User.fromJson(data) as T;
+    if (t == _i12.CoachAthlete) {
+      return _i12.CoachAthlete.fromJson(data) as T;
+    }
+    if (t == _i13.User) {
+      return _i13.User.fromJson(data) as T;
     }
     if (t == _i1.getType<_i3.Exercise?>()) {
       return (data != null ? _i3.Exercise.fromJson(data) : null) as T;
@@ -921,69 +926,72 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i5.VideoComment?>()) {
       return (data != null ? _i5.VideoComment.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.Workout?>()) {
-      return (data != null ? _i6.Workout.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i6.WeeklyLoadSummary?>()) {
+      return (data != null ? _i6.WeeklyLoadSummary.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.WorkoutExercise?>()) {
-      return (data != null ? _i7.WorkoutExercise.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.Workout?>()) {
+      return (data != null ? _i7.Workout.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.WorkoutSet?>()) {
-      return (data != null ? _i8.WorkoutSet.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.WorkoutExercise?>()) {
+      return (data != null ? _i8.WorkoutExercise.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.WorkoutVideo?>()) {
-      return (data != null ? _i9.WorkoutVideo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.WorkoutSet?>()) {
+      return (data != null ? _i9.WorkoutSet.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.BodyWeightEntry?>()) {
-      return (data != null ? _i10.BodyWeightEntry.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.WorkoutVideo?>()) {
+      return (data != null ? _i10.WorkoutVideo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.CoachAthlete?>()) {
-      return (data != null ? _i11.CoachAthlete.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.BodyWeightEntry?>()) {
+      return (data != null ? _i11.BodyWeightEntry.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.User?>()) {
-      return (data != null ? _i12.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.CoachAthlete?>()) {
+      return (data != null ? _i12.CoachAthlete.fromJson(data) : null) as T;
     }
-    if (t == List<_i13.User>) {
-      return (data as List).map((e) => deserialize<_i13.User>(e)).toList() as T;
+    if (t == _i1.getType<_i13.User?>()) {
+      return (data != null ? _i13.User.fromJson(data) : null) as T;
     }
-    if (t == List<_i14.Workout>) {
-      return (data as List).map((e) => deserialize<_i14.Workout>(e)).toList()
+    if (t == List<_i14.User>) {
+      return (data as List).map((e) => deserialize<_i14.User>(e)).toList() as T;
+    }
+    if (t == List<_i15.Workout>) {
+      return (data as List).map((e) => deserialize<_i15.Workout>(e)).toList()
           as T;
     }
-    if (t == List<_i15.Exercise>) {
-      return (data as List).map((e) => deserialize<_i15.Exercise>(e)).toList()
+    if (t == List<_i16.Exercise>) {
+      return (data as List).map((e) => deserialize<_i16.Exercise>(e)).toList()
           as T;
     }
-    if (t == List<_i16.WorkoutExercise>) {
+    if (t == List<_i17.WorkoutExercise>) {
       return (data as List)
-              .map((e) => deserialize<_i16.WorkoutExercise>(e))
+              .map((e) => deserialize<_i17.WorkoutExercise>(e))
               .toList()
           as T;
     }
-    if (t == List<_i17.WorkoutSet>) {
-      return (data as List).map((e) => deserialize<_i17.WorkoutSet>(e)).toList()
+    if (t == List<_i18.WorkoutSet>) {
+      return (data as List).map((e) => deserialize<_i18.WorkoutSet>(e)).toList()
           as T;
     }
-    if (t == List<_i18.WorkoutVideo>) {
+    if (t == List<_i19.WorkoutVideo>) {
       return (data as List)
-              .map((e) => deserialize<_i18.WorkoutVideo>(e))
+              .map((e) => deserialize<_i19.WorkoutVideo>(e))
               .toList()
           as T;
     }
-    if (t == List<_i19.VideoComment>) {
+    if (t == List<_i20.VideoComment>) {
       return (data as List)
-              .map((e) => deserialize<_i19.VideoComment>(e))
+              .map((e) => deserialize<_i20.VideoComment>(e))
               .toList()
           as T;
     }
-    if (t == List<_i20.ProgressPoint>) {
+    if (t == List<_i21.ProgressPoint>) {
       return (data as List)
-              .map((e) => deserialize<_i20.ProgressPoint>(e))
+              .map((e) => deserialize<_i21.ProgressPoint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i21.BodyWeightEntry>) {
+    if (t == List<_i22.BodyWeightEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i21.BodyWeightEntry>(e))
+              .map((e) => deserialize<_i22.BodyWeightEntry>(e))
               .toList()
           as T;
     }
@@ -998,13 +1006,14 @@ class Protocol extends _i1.SerializationManagerServer {
       _i3.Exercise => 'Exercise',
       _i4.ProgressPoint => 'ProgressPoint',
       _i5.VideoComment => 'VideoComment',
-      _i6.Workout => 'Workout',
-      _i7.WorkoutExercise => 'WorkoutExercise',
-      _i8.WorkoutSet => 'WorkoutSet',
-      _i9.WorkoutVideo => 'WorkoutVideo',
-      _i10.BodyWeightEntry => 'BodyWeightEntry',
-      _i11.CoachAthlete => 'CoachAthlete',
-      _i12.User => 'User',
+      _i6.WeeklyLoadSummary => 'WeeklyLoadSummary',
+      _i7.Workout => 'Workout',
+      _i8.WorkoutExercise => 'WorkoutExercise',
+      _i9.WorkoutSet => 'WorkoutSet',
+      _i10.WorkoutVideo => 'WorkoutVideo',
+      _i11.BodyWeightEntry => 'BodyWeightEntry',
+      _i12.CoachAthlete => 'CoachAthlete',
+      _i13.User => 'User',
       _ => null,
     };
   }
@@ -1025,19 +1034,21 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'ProgressPoint';
       case _i5.VideoComment():
         return 'VideoComment';
-      case _i6.Workout():
+      case _i6.WeeklyLoadSummary():
+        return 'WeeklyLoadSummary';
+      case _i7.Workout():
         return 'Workout';
-      case _i7.WorkoutExercise():
+      case _i8.WorkoutExercise():
         return 'WorkoutExercise';
-      case _i8.WorkoutSet():
+      case _i9.WorkoutSet():
         return 'WorkoutSet';
-      case _i9.WorkoutVideo():
+      case _i10.WorkoutVideo():
         return 'WorkoutVideo';
-      case _i10.BodyWeightEntry():
+      case _i11.BodyWeightEntry():
         return 'BodyWeightEntry';
-      case _i11.CoachAthlete():
+      case _i12.CoachAthlete():
         return 'CoachAthlete';
-      case _i12.User():
+      case _i13.User():
         return 'User';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1062,26 +1073,29 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'VideoComment') {
       return deserialize<_i5.VideoComment>(data['data']);
     }
+    if (dataClassName == 'WeeklyLoadSummary') {
+      return deserialize<_i6.WeeklyLoadSummary>(data['data']);
+    }
     if (dataClassName == 'Workout') {
-      return deserialize<_i6.Workout>(data['data']);
+      return deserialize<_i7.Workout>(data['data']);
     }
     if (dataClassName == 'WorkoutExercise') {
-      return deserialize<_i7.WorkoutExercise>(data['data']);
+      return deserialize<_i8.WorkoutExercise>(data['data']);
     }
     if (dataClassName == 'WorkoutSet') {
-      return deserialize<_i8.WorkoutSet>(data['data']);
+      return deserialize<_i9.WorkoutSet>(data['data']);
     }
     if (dataClassName == 'WorkoutVideo') {
-      return deserialize<_i9.WorkoutVideo>(data['data']);
+      return deserialize<_i10.WorkoutVideo>(data['data']);
     }
     if (dataClassName == 'BodyWeightEntry') {
-      return deserialize<_i10.BodyWeightEntry>(data['data']);
+      return deserialize<_i11.BodyWeightEntry>(data['data']);
     }
     if (dataClassName == 'CoachAthlete') {
-      return deserialize<_i11.CoachAthlete>(data['data']);
+      return deserialize<_i12.CoachAthlete>(data['data']);
     }
     if (dataClassName == 'User') {
-      return deserialize<_i12.User>(data['data']);
+      return deserialize<_i13.User>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1103,20 +1117,20 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i3.Exercise.t;
       case _i5.VideoComment:
         return _i5.VideoComment.t;
-      case _i6.Workout:
-        return _i6.Workout.t;
-      case _i7.WorkoutExercise:
-        return _i7.WorkoutExercise.t;
-      case _i8.WorkoutSet:
-        return _i8.WorkoutSet.t;
-      case _i9.WorkoutVideo:
-        return _i9.WorkoutVideo.t;
-      case _i10.BodyWeightEntry:
-        return _i10.BodyWeightEntry.t;
-      case _i11.CoachAthlete:
-        return _i11.CoachAthlete.t;
-      case _i12.User:
-        return _i12.User.t;
+      case _i7.Workout:
+        return _i7.Workout.t;
+      case _i8.WorkoutExercise:
+        return _i8.WorkoutExercise.t;
+      case _i9.WorkoutSet:
+        return _i9.WorkoutSet.t;
+      case _i10.WorkoutVideo:
+        return _i10.WorkoutVideo.t;
+      case _i11.BodyWeightEntry:
+        return _i11.BodyWeightEntry.t;
+      case _i12.CoachAthlete:
+        return _i12.CoachAthlete.t;
+      case _i13.User:
+        return _i13.User.t;
     }
     return null;
   }

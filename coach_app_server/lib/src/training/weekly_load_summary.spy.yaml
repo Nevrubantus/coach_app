@@ -1,0 +1,14 @@
+class: WeeklyLoadSummary
+fields:
+  currentVolume: double
+  previousVolume: double
+  percentChange: double
+  currentWorkingSets: int
+  previousWorkingSets: int
+  recommendedMinSets: int
+  recommendedMaxSets: int
+  bestExerciseName: String?
+  bestExerciseDelta: double
+  bestExerciseCurrentWeight: double
+  currentWeekStart: DateTime
+  currentWeekEnd: DateTime

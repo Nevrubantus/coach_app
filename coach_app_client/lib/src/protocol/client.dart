@@ -24,9 +24,11 @@ import 'package:coach_app_client/src/protocol/training/video_comment.dart'
     as _i9;
 import 'package:coach_app_client/src/protocol/training/progress_point.dart'
     as _i10;
-import 'package:coach_app_client/src/protocol/users/body_weight_entry.dart'
+import 'package:coach_app_client/src/protocol/training/weekly_load_summary.dart'
     as _i11;
-import 'protocol.dart' as _i12;
+import 'package:coach_app_client/src/protocol/users/body_weight_entry.dart'
+    as _i12;
+import 'protocol.dart' as _i13;
 
 /// {@category Endpoint}
 class EndpointCoach extends _i1.EndpointRef {
@@ -307,6 +309,13 @@ class EndpointTraining extends _i1.EndpointRef {
       'exerciseName': exerciseName,
     },
   );
+
+  _i2.Future<_i11.WeeklyLoadSummary> getWeeklyLoadSummary(int userId) =>
+      caller.callServerEndpoint<_i11.WeeklyLoadSummary>(
+        'training',
+        'getWeeklyLoadSummary',
+        {'userId': userId},
+      );
 }
 
 /// {@category Endpoint}
@@ -409,8 +418,8 @@ class EndpointUser extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<List<_i11.BodyWeightEntry>> listBodyWeights(int userId) =>
-      caller.callServerEndpoint<List<_i11.BodyWeightEntry>>(
+  _i2.Future<List<_i12.BodyWeightEntry>> listBodyWeights(int userId) =>
+      caller.callServerEndpoint<List<_i12.BodyWeightEntry>>(
         'user',
         'listBodyWeights',
         {'userId': userId},
@@ -437,7 +446,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i12.Protocol(),
+         _i13.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

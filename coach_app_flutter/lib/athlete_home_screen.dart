@@ -38,6 +38,7 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
   User? _coach;
   Workout? _upcomingWorkout;
   List<ProgressPoint> _progressPoints = [];
+  WeeklyLoadSummary? _weeklyLoadSummary;
   int _monthWorkoutCount = 0;
   String? _loadError;
   bool _isLoading = true;
@@ -71,6 +72,9 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
     var progressPoints = userId == null
         ? <ProgressPoint>[]
         : await OfflineCache.readProgress(userId);
+    var weeklyLoadSummary = userId == null
+        ? null
+        : await OfflineCache.readWeeklyLoad(userId);
     final cachedMonthWorkouts = userId == null
         ? <Workout>[]
         : await OfflineCache.readWorkoutsForMonth(userId, currentMonth);
@@ -86,6 +90,7 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
       _coach = coach;
       _upcomingWorkout = upcomingWorkout;
       _progressPoints = progressPoints;
+      _weeklyLoadSummary = weeklyLoadSummary;
       _monthWorkoutCount = monthWorkoutCount;
       _isLoading = false;
     });
@@ -100,6 +105,7 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
           client.training.getProgress(userId, null),
           client.training.getWorkoutsForMonth(userId, currentMonth),
           client.coach.getCoachForAthlete(userId),
+          client.training.getWeeklyLoadSummary(userId),
         ]),
       );
 
@@ -107,10 +113,12 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
       progressPoints = freshData[1] as List<ProgressPoint>;
       final monthWorkouts = freshData[2] as List<Workout>;
       coach = freshData[3] as User?;
+      weeklyLoadSummary = freshData[4] as WeeklyLoadSummary;
       monthWorkoutCount = monthWorkouts.length;
 
       await OfflineCache.saveUpcomingWorkout(userId, upcomingWorkout);
       await OfflineCache.saveProgress(userId, progressPoints);
+      await OfflineCache.saveWeeklyLoad(userId, weeklyLoadSummary);
       await OfflineCache.saveWorkoutsForMonth(
         userId,
         currentMonth,
@@ -125,6 +133,7 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
     setState(() {
       _upcomingWorkout = upcomingWorkout;
       _progressPoints = progressPoints;
+      _weeklyLoadSummary = weeklyLoadSummary;
       _monthWorkoutCount = monthWorkoutCount;
       _coach = coach;
       _loadError = loadError;
@@ -362,6 +371,11 @@ class _AthleteHomeScreenState extends State<AthleteHomeScreen> {
             onWorkoutTap: widget.onOpenCalendar,
             onProgressTap: widget.onOpenProgress,
             onAnthropometryTap: () => _scrollTo(_anthropometryKey),
+          ),
+          const SizedBox(height: 18),
+          WeeklyLoadSection(
+            summary: _weeklyLoadSummary,
+            isLoading: _isLoading,
           ),
           const SizedBox(height: 30),
           UpcomingWorkoutSection(

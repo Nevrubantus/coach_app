@@ -27,8 +27,10 @@ import 'package:coach_app_server/src/generated/training/video_comment.dart'
     as _i10;
 import 'package:coach_app_server/src/generated/training/progress_point.dart'
     as _i11;
-import 'package:coach_app_server/src/generated/users/body_weight_entry.dart'
+import 'package:coach_app_server/src/generated/training/weekly_load_summary.dart'
     as _i12;
+import 'package:coach_app_server/src/generated/users/body_weight_entry.dart'
+    as _i13;
 import 'package:coach_app_server/src/generated/protocol.dart';
 import 'package:coach_app_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -38,10 +40,10 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// `sessionBuilder` is used to build a `Session` object that represents the server state during an endpoint call and is used to set up scenarios.
 /// `endpoints` contains all your Serverpod endpoints and lets you call them:
 /// ```dart
-/// withServerpod('Given User endpoint', (sessionBuilder, endpoints) {
-///   test('when loading user by id then should return user data', () async {
-///     final user = await endpoints.user.getUser(sessionBuilder, 1);
-///     expect(user?.id, 1);
+/// withServerpod('Given Example endpoint', (sessionBuilder, endpoints) {
+///   test('when calling `hello` then should return greeting', () async {
+///     final greeting = await endpoints.example.hello(sessionBuilder, 'Michael');
+///     expect(greeting, 'Hello Michael');
 ///   });
 /// });
 /// ```
@@ -1021,6 +1023,37 @@ class _TrainingEndpoint {
       }
     });
   }
+
+  _i3.Future<_i12.WeeklyLoadSummary> getWeeklyLoadSummary(
+    _i1.TestSessionBuilder sessionBuilder,
+    int userId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'training',
+            method: 'getWeeklyLoadSummary',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'training',
+          methodName: 'getWeeklyLoadSummary',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i12.WeeklyLoadSummary>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _UserEndpoint {
@@ -1313,7 +1346,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<List<_i12.BodyWeightEntry>> listBodyWeights(
+  _i3.Future<List<_i13.BodyWeightEntry>> listBodyWeights(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -1336,7 +1369,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i12.BodyWeightEntry>>);
+                as _i3.Future<List<_i13.BodyWeightEntry>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

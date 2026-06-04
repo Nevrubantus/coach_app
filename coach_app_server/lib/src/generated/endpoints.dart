@@ -668,6 +668,25 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['exerciseName'],
                   ),
         ),
+        'getWeeklyLoadSummary': _i1.MethodConnector(
+          name: 'getWeeklyLoadSummary',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['training'] as _i3.TrainingEndpoint)
+                  .getWeeklyLoadSummary(
+                    session,
+                    params['userId'],
+                  ),
+        ),
       },
     );
     connectors['user'] = _i1.EndpointConnector(

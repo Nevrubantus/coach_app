@@ -24,6 +24,7 @@ training:
   - addVideoComment:
   - listVideoComments:
   - getProgress:
+  - getWeeklyLoadSummary:
 user:
   - getUser:
   - register:
