@@ -54,6 +54,7 @@ class WorkoutHeader extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
+                        color: Color(0xFF172033),
                         fontSize: 21,
                         fontWeight: FontWeight.w800,
                         height: 1.05,
@@ -63,8 +64,9 @@ class WorkoutHeader extends StatelessWidget {
                     Text(
                       formatWorkoutDateTime(workout.scheduledAt),
                       style: const TextStyle(
-                        color: AppColors.textGrey,
+                        color: Color(0xFF4E5B67),
                         fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],

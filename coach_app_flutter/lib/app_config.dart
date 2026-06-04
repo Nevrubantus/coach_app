@@ -99,7 +99,10 @@ String _androidHostUrl(String url) {
     return url;
   }
 
-  return uri.replace(host: '10.0.2.2').toString();
+  // Android emulator reaches the host machine through 10.0.2.2.
+  // Keep local Serverpod API on its fixed port even if an IDE injects a
+  // temporary localhost debug port through SERVER_URL.
+  return uri.replace(host: '10.0.2.2', port: 8080).toString();
 }
 
 String _withPort(String url, int port) {
