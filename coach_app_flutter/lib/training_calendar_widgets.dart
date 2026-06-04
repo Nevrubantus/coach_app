@@ -239,6 +239,10 @@ class _CalendarDay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = isSelected
+        ? Colors.white
+        : Theme.of(context).colorScheme.onSurface;
+
     return Material(
       color: isSelected ? AppColors.primaryBlue : Colors.transparent,
       borderRadius: BorderRadius.circular(10),
@@ -251,7 +255,7 @@ class _CalendarDay extends StatelessWidget {
             Text(
               '$day',
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
+                color: textColor,
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
               ),

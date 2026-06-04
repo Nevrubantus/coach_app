@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coach_app_client/coach_app_client.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,16 @@ class MotivationBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final motivation = _randomMotivation();
+    final message = monthWorkoutCount == 0
+        ? motivation
+        : 'В этом месяце уже ${formatCount(
+            monthWorkoutCount,
+            'тренировка',
+            'тренировки',
+            'тренировок',
+          )}. $motivation';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -32,20 +44,30 @@ class MotivationBanner extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              monthWorkoutCount == 0
-                  ? 'Сегодня хороший день для первой записи.'
-                  : 'В этом месяце уже ${formatCount(
-                      monthWorkoutCount,
-                      'тренировка',
-                      'тренировки',
-                      'тренировок',
-                    )}.',
+              message,
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _randomMotivation() {
+    const messages = [
+      'Двигайся ровно, день за днем.',
+      'Сегодня задача простая: сделать подход лучше, чем вчера.',
+      'Прогресс любит тех, кто приходит по расписанию.',
+      'Режим как у Рокки: без лишнего шума, но с делом.',
+      'Сильный день начинается с первого разминочного подхода.',
+      'Техника, вес, спокойствие. Остальное приложится.',
+      'Не геройствуй, работай точно. Так растет результат.',
+      'Каждая запись в журнале делает прогресс видимым.',
+      'Тренировка не обязана быть идеальной, она должна быть выполненной.',
+      'Как в хорошем фильме: главный рывок готовится в обычных сценах.',
+    ];
+
+    return messages[math.Random().nextInt(messages.length)];
   }
 }
 

@@ -105,9 +105,6 @@ class _WorkingWeightChartPainter extends CustomPainter {
     const bottomPadding = 18.0;
     final chartHeight = size.height - topPadding - bottomPadding;
 
-    final gridPaint = Paint()
-      ..color = const Color(0xFFEFEFF4)
-      ..strokeWidth = 1;
     final linePaint = Paint()
       ..color = AppColors.primaryBlue
       ..strokeWidth = 3
@@ -124,11 +121,6 @@ class _WorkingWeightChartPainter extends CustomPainter {
           AppColors.primaryBlue.withValues(alpha: 0.01),
         ],
       ).createShader(Offset.zero & size);
-
-    for (var i = 1; i <= 3; i++) {
-      final y = size.height * i / 4;
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
-    }
 
     final path = Path();
     final fillPath = Path();
