@@ -35,6 +35,8 @@ Future<List<String>> _serverUrlCandidates() async {
       candidates.add(_withTrailingSlash(_androidHostUrl(configuredServerUrl)));
     }
     candidates.add(_withTrailingSlash(configuredServerUrl));
+  } else if (kIsWeb && !_isLocalWebHost(Uri.base.host)) {
+    candidates.add(_serverpodUrlFromOrigin(Uri.base));
   } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     candidates.add('http://10.0.2.2:8080/');
     candidates.add('http://127.0.0.1:8080/');
@@ -80,6 +82,23 @@ String _originUrl(Uri uri) {
       port: uri.hasPort ? uri.port : null,
     ).toString(),
   );
+}
+
+String _serverpodUrlFromOrigin(Uri uri) {
+  final origin = Uri(
+    scheme: uri.scheme,
+    host: uri.host,
+    port: uri.hasPort ? uri.port : null,
+  );
+
+  return _withTrailingSlash(origin.resolve('/serverpod/').toString());
+}
+
+bool _isLocalWebHost(String host) {
+  final normalized = host.toLowerCase();
+  return normalized == 'localhost' ||
+      normalized == '127.0.0.1' ||
+      normalized == '::1';
 }
 
 String _withTrailingSlash(String url) {
